@@ -44,14 +44,15 @@ class Jogo():
     
     def jogar(self):
         pontos_da_rodada = 1
+        rodadas_jogadas = 1
         while not self.verificarVencedorJogo(): # Enquanto não houver um vencedor
             #print(f'Vamos jogar Truco! Para começar, informe o nome de 4 jogadores:\n')
-            print(f'\n----- INICIANDO NOVA RODADA -----\n')
+            print(f'\n----- INICIANDO NOVA RODADA ({rodadas_jogadas}) -----\n')
 
             # Criando uma nova rodada
             nova_rodada = Rodada(self.jogadores, self.equipes, self.baralho, 1)
-            nova_rodada.realizarPreRodada() # Distribui as mãos e pede Famílias
-            vencedor_rodada, pontos_da_rodada = nova_rodada.realizarRodada() # Obtém o vencedor e os pontos da rodada
+            nova_rodada.realizarPreRodada(rodadas_jogadas, self.pontuacao) # Distribui as mãos e pede Famílias
+            vencedor_rodada, pontos_da_rodada = nova_rodada.realizarRodada(rodadas_jogadas) # Obtém o vencedor e os pontos da rodada
 
             # Atualizando a pontuação da equipe vencedora
             if vencedor_rodada:
@@ -59,6 +60,8 @@ class Jogo():
                 print(f'\nPontuação atual: {self.pontuacao}')
             
             self.baralho.resetarBaralho()
+
+            rodadas_jogadas = rodadas_jogadas + 1
             
             if self.verificarVencedorJogo(): # Se houver uma equipe vencedora no jogo, ele acaba
                 break

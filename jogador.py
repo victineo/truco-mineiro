@@ -25,26 +25,26 @@ class Jogador():
             print('Opção inválida. Usando o método padrão: Descendo.')
             return 'descendo'
     
-    def pedirAumento(self, proximo_jogador, tipo_aumento, pontos_atual, carta_escolhida=None): # ORIGINALMENTE SEM `carta_escolhia=None` # Pedir Truco ou Seis
+    def pedirAumento(self, proximo_jogador, tipo_aumento, pontos_da_rodada, carta_escolhida=None): # ORIGINALMENTE SEM `carta_escolhia=None` # Pedir Truco ou Seis
         if tipo_aumento == 'Truco':
             pontos = 3
         elif tipo_aumento == 'Seis':
-            if pontos_atual < 3:
+            if pontos_da_rodada < 3:
                 print(f'Você não pode pedir Seis se a rodada ainda não estiver Trucada.')
-                return pontos_atual
+                return pontos_da_rodada
             pontos = 6
         elif tipo_aumento == 'Nove':
-            if pontos_atual < 6:
+            if pontos_da_rodada < 6:
                 print(f'Você não pode pedir Nove se a rodada ainda não estiver valendo Seis.')
-                return pontos_atual
+                return pontos_da_rodada
             pontos = 9
         elif tipo_aumento == 'Doze':
-            if pontos_atual < 9:
+            if pontos_da_rodada < 9:
                 print(f'Você não pode pedir Doze se a rodada ainda não estiver valendo Nove.')
-                return pontos_atual
+                return pontos_da_rodada
             pontos = 12
         else:
-            return pontos_atual
+            return pontos_da_rodada
         
         while True:
             resposta = input(f'\nGostaria de pedir {tipo_aumento}?\n1. Sim\n2. Não, voltar\n3. O que é pedir {tipo_aumento}?\n')
@@ -59,9 +59,9 @@ class Jogador():
                     if carta_jogada:
                         return carta_jogada, pontos # Retorna a carta jogada para uso posterior
                 else:
-                    print(f'{proximo_jogador.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_atual} pontos.')
-                    self.equipe.adicionarPonto(pontos_atual)
-                    return pontos_atual
+                    print(f'{proximo_jogador.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_da_rodada} pontos.')
+                    self.equipe.adicionarPonto(pontos_da_rodada)
+                    return pontos_da_rodada
             elif resposta == '2':
                 break
             elif resposta == '3':
@@ -74,8 +74,8 @@ class Jogador():
                 elif tipo_aumento == 'Doze':
                     print(f'Pedir Doze é desafiar a equipe adversária a jogar a rodada atual valendo 12 pontos ao invés de 9.')
     
-    def responderAumento(self, nome_desafiante, tipo_aumento):
-        resposta = input(f'\n{self.nome}, {nome_desafiante} está pedindo {tipo_aumento}! Aceitar? (s/n): ')
+    def responderAumento(self, proximo_jogador, tipo_aumento):
+        resposta = input(f'\n{self.nome}, {proximo_jogador} está pedindo {tipo_aumento}! Aceitar? (s/n): ')
         if resposta.lower() == 's':
             return True # Aceitou o aumento
         else:
@@ -126,7 +126,7 @@ class Jogador():
                 if (jogador_escolhido, mao_escolhida) in maos_descartadas:
                     maos_descartadas.remove((jogador_escolhido, mao_escolhida))
                     jogadores_descartaram.remove(jogadores_descartaram[int(escolha) - 1]) # Remove a mão verificada das opções disponíveis para verificar
-                    print(f'A mão descartada pelo {jogador_escolhido.nome} foi removida das opções.')
+                    print(f'A mão descartada pelo {jogador_escolhido.nome} ({jogador_escolhido.equipe.nome}) foi removida das opções.')
                 else:
                     print(f'ERRO: A mão de {jogador_escolhido.nome} já foi removida ou não está mais disponível.')
             elif escolha == str(len(jogadores_descartaram) + 1):
@@ -134,17 +134,17 @@ class Jogador():
             else:
                 print('Opção inválida. Tente novamente.')
 
-    def verificarFamilia(self, jogador_verificado, mao_descartada, equipes): # Função que verifica se uma mão descartada é família
+    def verificarFamilia(self, jogador_escolhido, mao_escolhida, equipes): # Função que verifica se uma mão descartada é família
         familias = {'Q', 'J', 'K', 'A'}
 
-        print(f'Mão descartada por {jogador_verificado.nome}: {mao_descartada}')
+        print(f'\nMão descartada por {jogador_escolhido.nome}: {mao_escolhida}')
 
-        if all(carta.valor in familias for carta in mao_descartada):
-            print(f'A mão descartada por {jogador_verificado.nome} era uma família! A {jogador_verificado.equipe.nome} ganhou 1 ponto.')
-            equipes[jogador_verificado.equipe.nome].adicionarPonto(1)
+        if all(carta.valor in familias for carta in mao_escolhida):
+            print(f'A mão descartada por {jogador_escolhido.nome} era uma família! A {jogador_escolhido.equipe.nome} ganhou 1 ponto.')
+            equipes[jogador_escolhido.equipe.nome].adicionarPonto(1)
             return True
         else:
-            print(f'A mão descartada por {jogador_verificado.nome} ({jogador_verificado.equipe.nome}) não era uma família! Sua equipe ({self.equipe}) ganhou 1 ponto.')
+            print(f'A mão descartada por {jogador_escolhido.nome} ({jogador_escolhido.equipe.nome}) não era uma família! Sua equipe ({self.equipe.nome}) ganhou 1 ponto.')
             equipes[self.equipe.nome].adicionarPonto(1)
             return False
     

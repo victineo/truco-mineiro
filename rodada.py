@@ -22,7 +22,7 @@ class Rodada():
 
     # ----------
 
-    def realizarPreRodada(self):
+    def realizarPreRodada(self, rodadas_jogadas, pontuacao_jogo):
         for jogador in self.jogadores: # Esvazia as mãos dos jogadores antes de distribuir novas cartas
             jogador.mao.clear()
 
@@ -38,7 +38,7 @@ class Rodada():
 
         # Fase 1: Decisões individuais de manter ou pedir Família
         for jogador in jogadores_intercalados:
-            print(f'\n----- PRÉ-RODADA - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Veja sua mão e decida se quer ficar com ela ou pedir uma nova ---')
+            print(f'\n----- PRÉ-RODADA (RODADA {rodadas_jogadas}) - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Veja sua mão e decida se quer ficar com ela ou pedir uma nova ---')
             jogador.mostrarMao()
             mao_descartada = jogador.exibirMenuAcoes(self.equipes, None, self.baralho, pre_rodada=True, maos_descartadas=self.maos_descartadas)
 
@@ -51,11 +51,13 @@ class Rodada():
         for jogador in jogadores_intercalados:
             if self.maos_descartadas:
                 print(f'\n----- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Você pode abrir a(s) mão(s) descartadas pelos jogadores da equipe adversária. Se não forem famílias (constituídas por Q, J, K ou A), sua equipe ganha 1 ponto. Se for, a equipe adversária ganha um ponto. ---')
-                jogador.verificarFamilias(self.maos_descartadas, self.equipes)
+                jogador_verificou_familia = jogador.verificarFamilias(self.maos_descartadas, self.equipes)
+                if jogador_verificou_familia:
+                    print(f'\nPontuação atual: {pontuacao_jogo}')
 
         print(f'\nA PRÉ-RODADA TERMINOU. A MD3 COMEÇARÁ AGORA.')
     
-    def realizarRodada(self):
+    def realizarRodada(self, rodadas_jogadas):
         self.pontos_da_rodada = 1
 
         vitorias_equipes = {'Equipe A': 0, 'Equipe B': 0}
@@ -69,7 +71,8 @@ class Rodada():
         ]
 
         for i in range(3): # Melhor de 3 subrodadas
-            print(f'\n--- Subrodada {i + 1} de 3 ---') # QUE TAL ACIMA DISSO PRINTAR O NÚMERO DA RODADA TAMBÉM?
+            print(f'\n----- RODADA {rodadas_jogadas} -----')
+            print(f'--- Subrodada {i + 1} de 3 ---') # QUE TAL ACIMA DISSO PRINTAR O NÚMERO DA RODADA TAMBÉM?
 
             # Cria uma nova subrodada
             subrodada = Subrodada(jogadores_intercalados, self.equipes)
