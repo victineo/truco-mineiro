@@ -15,8 +15,8 @@ class Jogador():
     def mostrarMao(self):
         return self.mao
     
-    def escolherMetodoDistribuicao(self):
-        escolha = input(f'Escolha um método de distribuição:\n1. Descendo (de cima para baixo)\n2. Subindo (de baixo para cima)\n')
+    def escolherMetodoDistribuicao(self, jogador_anterior):
+        escolha = input(f'{jogador_anterior.nome}, escolha um método de distribuição:\n1. Descendo (de cima para baixo)\n2. Subindo (de baixo para cima)\n')
         if escolha == '1':
             return 'descendo'
         elif escolha == '2':

@@ -9,12 +9,12 @@ class Rodada():
         self.baralho = baralho
         self.maos_descartadas = []
         self.ultimo_pedido_aumento = None
-        self.pontos_da_rodada = 1 # ORIGINALMENTE `1` # Sempre começa valendo 1 ponto
+        self.pontos_da_rodada = 1 # Sempre começa valendo 1 ponto
 
-    def distribuirMaos(self):
-        jogador_anterior = self.jogadores[-1] # Jogador anterior ao primeiro a jogar
+    def distribuirMaos(self, ordem_jogadores):
+        jogador_anterior = ordem_jogadores[-1] # Jogador anterior ao primeiro a jogar
 
-        metodo_distribuicao = jogador_anterior.escolherMetodoDistribuicao() # Pede para o jogador anterior escolher o método de distribuição
+        metodo_distribuicao = jogador_anterior.escolherMetodoDistribuicao(jogador_anterior) # Pede para o jogador anterior escolher o método de distribuição
 
         for jogador in self.jogadores:  
             cartas = self.baralho.distribuirCartas(3, metodo_distribuicao) # Distribui 3 cartas para cada jogador com base no método escolhido
@@ -22,22 +22,18 @@ class Rodada():
 
     # ----------
 
-    def realizarPreRodada(self, rodadas_jogadas, pontuacao_jogo):
+    def realizarPreRodada(self, rodadas_jogadas, pontuacao_jogo, ordem_jogadores):
         for jogador in self.jogadores: # Esvazia as mãos dos jogadores antes de distribuir novas cartas
             jogador.mao.clear()
 
-        self.distribuirMaos()
+        self.distribuirMaos(ordem_jogadores)
         jogadores_pediram_familia = False
 
         equipe_a = self.equipes['Equipe A']
         equipe_b = self.equipes['Equipe B']
-        jogadores_intercalados = [
-            equipe_a.jogadores[0], equipe_b.jogadores[0],
-            equipe_a.jogadores[1], equipe_b.jogadores[1]
-        ]
 
         # Fase 1: Decisões individuais de manter ou pedir Família
-        for jogador in jogadores_intercalados:
+        for jogador in ordem_jogadores:
             print(f'\n----- PRÉ-RODADA (RODADA {rodadas_jogadas}) - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Veja sua mão e decida se quer ficar com ela ou pedir uma nova ---')
             jogador.mostrarMao()
             mao_descartada = jogador.exibirMenuAcoes(self.equipes, None, self.baralho, pre_rodada=True, maos_descartadas=self.maos_descartadas)
@@ -48,7 +44,7 @@ class Rodada():
                 print(f'{jogador.nome} pediu Família.')
         
         # Fase 2: Verificar famílias
-        for jogador in jogadores_intercalados:
+        for jogador in ordem_jogadores:
             if self.maos_descartadas:
                 print(f'\n----- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Você pode abrir a(s) mão(s) descartadas pelos jogadores da equipe adversária. Se não forem famílias (constituídas por Q, J, K ou A), sua equipe ganha 1 ponto. Se for, a equipe adversária ganha um ponto. ---')
                 jogador_verificou_familia = jogador.verificarFamilias(self.maos_descartadas, self.equipes)
@@ -57,7 +53,7 @@ class Rodada():
 
         print(f'\nA PRÉ-RODADA TERMINOU. A MD3 COMEÇARÁ AGORA.')
     
-    def realizarRodada(self, rodadas_jogadas):
+    def realizarRodada(self, rodadas_jogadas, ordem_jogadores):
         self.pontos_da_rodada = 1
 
         vitorias_equipes = {'Equipe A': 0, 'Equipe B': 0}
@@ -65,17 +61,12 @@ class Rodada():
         equipe_a = self.equipes['Equipe A']
         equipe_b = self.equipes['Equipe B']
 
-        jogadores_intercalados = [
-            equipe_a.jogadores[0], equipe_b.jogadores[0],
-            equipe_a.jogadores[1], equipe_b.jogadores[1]
-        ]
-
         for i in range(3): # Melhor de 3 subrodadas
             print(f'\n----- RODADA {rodadas_jogadas} -----')
-            print(f'--- Subrodada {i + 1} de 3 ---') # QUE TAL ACIMA DISSO PRINTAR O NÚMERO DA RODADA TAMBÉM?
+            print(f'--- Subrodada {i + 1} de 3 ---')
 
             # Cria uma nova subrodada
-            subrodada = Subrodada(jogadores_intercalados, self.equipes)
+            subrodada = Subrodada(ordem_jogadores, self.equipes)
             # Realiza a subrodada
             resultado_subrodada = subrodada.realizarSubrodada(self.pontos_da_rodada)
 

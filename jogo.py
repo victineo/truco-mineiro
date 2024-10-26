@@ -45,21 +45,35 @@ class Jogo():
     def jogar(self):
         pontos_da_rodada = 1
         rodadas_jogadas = 1
+
+        ordem_jogadores = [
+            self.equipe_A.jogadores[0], self.equipe_B.jogadores[0],
+            self.equipe_A.jogadores[1], self.equipe_B.jogadores[1]
+        ]
+
         while not self.verificarVencedorJogo(): # Enquanto não houver um vencedor
             #print(f'Vamos jogar Truco! Para começar, informe o nome de 4 jogadores:\n')
-            print(f'\n----- INICIANDO NOVA RODADA ({rodadas_jogadas}) -----\n')
+            print(f'\n----- INICIANDO {rodadas_jogadas}ª RODADA -----\n')
 
             # Criando uma nova rodada
             nova_rodada = Rodada(self.jogadores, self.equipes, self.baralho, 1)
-            nova_rodada.realizarPreRodada(rodadas_jogadas, self.pontuacao) # Distribui as mãos e pede Famílias
-            vencedor_rodada, pontos_da_rodada = nova_rodada.realizarRodada(rodadas_jogadas) # Obtém o vencedor e os pontos da rodada
+
+            if rodadas_jogadas == 1: # Se for a 1ª rodada do jogo, a mensagem é um pouco diferente
+                print(f'ORDEM INICIAL DE JOGADA: {[jogador.nome for jogador in ordem_jogadores]}')
+            else:
+                print(f'ORDEM DE JOGADA: {[jogador.nome for jogador in ordem_jogadores]}')
+            
+            nova_rodada.realizarPreRodada(rodadas_jogadas, self.pontuacao, ordem_jogadores) # Distribui as mãos e pede Famílias
+            vencedor_rodada, pontos_da_rodada = nova_rodada.realizarRodada(rodadas_jogadas, ordem_jogadores) # Obtém o vencedor e os pontos da rodada
 
             # Atualizando a pontuação da equipe vencedora
             if vencedor_rodada:
                 self.pontuacao[vencedor_rodada] += pontos_da_rodada
-                print(f'\nPontuação atual: {self.pontuacao}')
+                print(f'\nPONTUAÇÃO ATUAL: {self.pontuacao}')
             
-            self.baralho.resetarBaralho()
+            self.baralho.resetarBaralho() # Reseta o baralho para a próxima rodada
+
+            ordem_jogadores = ordem_jogadores[1:] + ordem_jogadores[:1] # Rotaciona a lista de jogadores para a próxima rodada
 
             rodadas_jogadas = rodadas_jogadas + 1
             
