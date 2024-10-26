@@ -46,7 +46,7 @@ class Jogo():
         pontos_da_rodada = 1
         while not self.verificarVencedorJogo(): # Enquanto não houver um vencedor
             #print(f'Vamos jogar Truco! Para começar, informe o nome de 4 jogadores:\n')
-            print(f'\n--- Iniciando nova rodada ---\n')
+            print(f'\n----- INICIANDO NOVA RODADA -----\n')
 
             # Criando uma nova rodada
             nova_rodada = Rodada(self.jogadores, self.equipes, self.baralho, 1)

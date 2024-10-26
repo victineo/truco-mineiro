@@ -38,7 +38,7 @@ class Rodada():
 
         # Fase 1: Decisões individuais de manter ou pedir Família
         for jogador in jogadores_intercalados:
-            print(f'\n--- PRÉ-RODADA - {jogador.nome} ({jogador.equipe.nome}) ---\n-- Veja sua mão e decida se quer ficar com ela ou pedir uma nova --')
+            print(f'\n----- PRÉ-RODADA - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Veja sua mão e decida se quer ficar com ela ou pedir uma nova ---')
             jogador.mostrarMao()
             mao_descartada = jogador.exibirMenuAcoes(self.equipes, None, self.baralho, pre_rodada=True, maos_descartadas=self.maos_descartadas)
 
@@ -50,10 +50,10 @@ class Rodada():
         # Fase 2: Verificar famílias
         for jogador in jogadores_intercalados:
             if self.maos_descartadas:
-                print(f'\n--- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) ---')
+                print(f'\n----- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Você pode abrir a(s) mão(s) descartadas pelos jogadores da equipe adversária. Se não forem famílias (constituídas por Q, J, K ou A), sua equipe ganha 1 ponto. Se for, a equipe adversária ganha um ponto. ---')
                 jogador.verificarFamilias(self.maos_descartadas, self.equipes)
 
-        print(f'\nA pré-rodada acabou. As subrodadas começarão agora.')
+        print(f'\nA PRÉ-RODADA TERMINOU. A MD3 COMEÇARÁ AGORA.')
     
     def realizarRodada(self):
         self.pontos_da_rodada = 1

@@ -6,7 +6,7 @@ class Jogador():
         self.nome = nome
         self.equipe = equipe # É atribuída mais tarde no jogo
         self.mao = []
-        #self.jogador_anterior = jogador_anterior # FUTURAMENTE PARA BOTS # O jogador sabe foi o último a jogar antes dele
+        #self.jogador_anterior = jogador_anterior # FUTURAMENTE PARA BOTS # O jogador sabe quem foi o último a jogar antes dele
         self.proximo_jogador = proximo_jogador # O jogador sabe quem é o próximo a jogar após ele
     
     def receberCartas(self, cartas):
