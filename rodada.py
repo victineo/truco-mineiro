@@ -41,7 +41,7 @@ class Rodada():
             if mao_descartada:
                 self.maos_descartadas.append((jogador, mao_descartada))
                 jogadores_pediram_familia = True
-                print(f'{jogador.nome} pediu Família.')
+                print(f'\n{jogador.nome} ({jogador.equipe.nome}) pediu Família.'.upper())
         
         # Fase 2: Verificar famílias
         for jogador in ordem_jogadores:
