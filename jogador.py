@@ -149,7 +149,7 @@ class Jogador():
         return self.equipe.registrarPedidoDesistencia(self, pontos_da_rodada)
     
     def confirmarDesistencia(self, pontos_da_rodada):
-        resposta = input(f'{self.nome}, seu companheiro quer desistir dessa rodada. Confirmar desistência? (s/n): ')
+        resposta = input(f'\n{self.nome}, seu companheiro quer desistir dessa rodada. Confirmar desistência? (s/n): ')
         if resposta.lower() == 's':
             print(f'Você aceitou o pedido de desistência. A rodada atual foi encerrada, e a equipe adversária ganhou {pontos_da_rodada} pontos.')
             return True # Aceitou a Desistência

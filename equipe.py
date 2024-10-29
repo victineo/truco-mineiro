@@ -25,7 +25,7 @@ class Equipe():
             return True
         else:
             self.pediu_desistencia = None  # Reseta o pedido de desistência
-            print(f'Seu companheiro {companheiro.nome} recusou o pedido de desistência.')
+            print(f'\nSeu companheiro ({companheiro.nome}) recusou o pedido de desistência. A rodada continuará.')
             return False
     
     def desistir(self, pontos_da_rodada): # A equipe oficialmente desiste da rodada e o adversário ganha 1 ponto
