@@ -10,7 +10,7 @@ class Jogador():
         self.proximo_jogador = proximo_jogador # O jogador sabe quem é o próximo a jogar após ele
     
     def receberCartas(self, cartas):
-        self.mao.extend(cartas)  # Recebe as cartas distribuídas pelo Baralho
+        self.mao.extend(cartas) # Recebe as cartas distribuídas pelo Baralho
     
     def mostrarMao(self):
         return self.mao
@@ -25,7 +25,7 @@ class Jogador():
             print('Opção inválida. Usando o método padrão: Descendo.')
             return 'descendo'
     
-    def pedirAumento(self, proximo_jogador, tipo_aumento, pontos_da_rodada, carta_escolhida=None): # ORIGINALMENTE SEM `carta_escolhia=None` # Pedir Truco ou Seis
+    def pedirAumento(self, proximo_jogador, tipo_aumento, pontos_da_rodada, carta_escolhida=None): # Pedir Truco ou Seis
         if tipo_aumento == 'Truco':
             pontos = 3
         elif tipo_aumento == 'Seis':
@@ -82,37 +82,33 @@ class Jogador():
             return False # Recusou o aumento
     
     def pedirFamilia(self, baralho):
-        if baralho is None:
-            print(f'Erro: o baralho não foi passado corretamente.')
-        
         while True:
             escolha_familia = input(f'\nGostaria de pedir Família?\n1. Sim\n2. Não\n3. O que é pedir Família?\nInsira sua escolha: ')
             if escolha_familia == '1':
-                print(f'\n{self.nome} pediu Família.')
+                print(f'\nVocê pediu Família.')
                 mao_descartada = self.mao[:]
                 self.mao.clear()
                 self.receberCartas(baralho.distribuirCartas(3))
-                print(f'Sua nova mão: {self.mostrarMao()}')
-                return mao_descartada # Retorna a mão descartada para ser registrada na rodada
+                print(f'Suas novas cartas: {self.mostrarMao()}')
+                return mao_descartada # Retorna a mão descartada
             elif escolha_familia == '2':
-                break
+                return None # Indica que o jogador não pediu família e encerra
             elif escolha_familia == '3':
-                print(f'Pedir família é solicitar uma nova mão para você, caso perceba que sua mão atual está fraca. As cartas que constituem uma Família são Q, J, K e A.\nAo pedir família, a equipe adversária pode optar por abrir sua mão descartada para conferir se de fato era uma família. Se for verdade, sua equipe ganha 1 ponto. Se não for, a equipe adversária ganha 1 ponto.\nNo máximo 3 famílias podem ser solicitadas antes de o jogo começar, e todos os jogadores podem pedir quantas famílias quiserem até atingir esse limite.')
+                print(f'Pedir Família é solicitar uma nova mão para você, caso perceba que sua mão atual está fraca.\nFamílias são constituídas pelas cartas Q, J, K e A.')
             else:
                 print('Opção inválida. Tente novamente.')
-                pass
     
-    def verificarFamilias(self, maos_descartadas, equipes): # Interface do jogador para verificar famílias
+    def verificarFamilias(self, maos_descartadas, equipes):
         jogadores_descartaram = [
                 (jogador, mao) for jogador, mao in maos_descartadas if jogador.equipe != self.equipe
             ]
 
         if not jogadores_descartaram:
-            print('Não há mãos para verificar.') # ORIGINALMENTE 'Nenhuma família foi pedida pela equipe adversária'
+            print('Não há mãos para verificar.')
             return None
         
         while jogadores_descartaram:
-            print(f'\nA equipe adversária pediu {len(jogadores_descartaram)} família(s):')
+            print(f'\nA equipe adversária pediu {len(jogadores_descartaram)} Família(s):')
             for i, (jogador, _) in enumerate(jogadores_descartaram):
                 print(f'{i+1}. Verificar Família de {jogador.nome} ({jogador.equipe.nome})')
             print(f'{len(jogadores_descartaram) + 1}. Prosseguir')
@@ -135,16 +131,16 @@ class Jogador():
                 print('Opção inválida. Tente novamente.')
 
     def verificarFamilia(self, jogador_escolhido, mao_escolhida, equipes): # Função que verifica se uma mão descartada é família
-        familias = {'Q', 'J', 'K', 'A'}
+        CARTAS_FAMILIA = {'Q', 'J', 'K', 'A'}
 
-        print(f'\nMão descartada por {jogador_escolhido.nome}: {mao_escolhida}')
+        print(f'\nMão descartada por {jogador_escolhido.nome} ({jogador_escolhido.equipe.nome}): {mao_escolhida}')
 
-        if all(carta.valor in familias for carta in mao_escolhida):
-            print(f'A mão descartada por {jogador_escolhido.nome} era uma família! A {jogador_escolhido.equipe.nome} ganhou 1 ponto.')
+        if all(carta.valor in CARTAS_FAMILIA for carta in mao_escolhida):
+            print(f'A mão descartada por {jogador_escolhido.nome} era uma Família! A {jogador_escolhido.equipe.nome} ganhou 1 ponto.')
             equipes[jogador_escolhido.equipe.nome].adicionarPonto(1)
             return True
         else:
-            print(f'A mão descartada por {jogador_escolhido.nome} ({jogador_escolhido.equipe.nome}) não era uma família! Sua equipe ({self.equipe.nome}) ganhou 1 ponto.')
+            print(f'A mão descartada por {jogador_escolhido.nome} ({jogador_escolhido.equipe.nome}) não era uma Família! Sua equipe ({self.equipe.nome}) ganhou 1 ponto.')
             equipes[self.equipe.nome].adicionarPonto(1)
             return False
     
@@ -152,13 +148,13 @@ class Jogador():
         print(f'Você pediu para desistir dessa rodada.')
         return self.equipe.registrarPedidoDesistencia(self, pontos_da_rodada)
     
-    def confirmarDesistencia(self):
+    def confirmarDesistencia(self, pontos_da_rodada):
         resposta = input(f'{self.nome}, seu companheiro quer desistir dessa rodada. Confirmar desistência? (s/n): ')
         if resposta.lower() == 's':
-            print(f'Você aceitou o pedido de desistência.')
+            print(f'Você aceitou o pedido de desistência. A rodada atual foi encerrada, e a equipe adversária ganhou {pontos_da_rodada} pontos.')
             return True # Aceitou a Desistência
         else:
-            print(f'Você recusou o pedido de desistência.')
+            print(f'Você recusou o pedido de desistência. A rodada atual continuará.')
             return False # Recusou a Desistência
 
     def jogarCarta(self, carta_escolhida=None):
@@ -195,7 +191,7 @@ class Jogador():
                 print(f'{i}. Manter minhas cartas')
                 i += 1
 
-                print(f'{i}. Pedir Família')
+                print(f'{i}. Pedir Família ({len(maos_descartadas)}/3)')
                 i += 1
 
             else:
@@ -224,7 +220,10 @@ class Jogador():
             if escolha_acao == '1' and pre_rodada:
                 return None
             if escolha_acao == '2' and pre_rodada:
-                return self.pedirFamilia(baralho)
+                while len(maos_descartadas) < 3:
+                    return self.pedirFamilia(baralho)
+                
+                print(f'\nNão é possível pedir mais Famílias.')
             
             # Ações normais
             if escolha_acao == '1' and not pre_rodada:

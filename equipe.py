@@ -3,13 +3,13 @@ class Equipe():
         self.nome = nome # Nome atribuído à equipe ('Equipe A', 'Equipe B')
         self.jogadores = jogadores
         self.pediu_desistencia = []
-        self.equipe_adversaria = equipe_adversaria # Referência à equipe adversária
-        self.pontos = 0 # Equipe inicia sem pontos
+        self.equipe_adversaria = equipe_adversaria
+        self.pontos = 0 # Inicia sem pontos
     
     def adicionarPonto(self, pontos):
-        self.pontos += pontos # Originalmente `self.pontos += 1`
+        self.pontos += pontos
 
-    def obterCompanheiro(self, jogador): # Retorna o companheiro de equipe do jogador
+    def obterCompanheiro(self, jogador):
         return [j for j in self.jogadores if j != jogador][0]
     
     def registrarPedidoDesistencia(self, jogador, pontos_da_rodada): # Registra o pedido de desistência de um jogador e verifica a resposta do companheiro
@@ -20,7 +20,7 @@ class Equipe():
         self.pediu_desistencia = jogador # Registra o jogador que pediu para desistir
         companheiro = self.obterCompanheiro(jogador) # Obtém o companheiro do jogador que pediu desistência
 
-        if companheiro.confirmarDesistencia(): # Pergunta diretamente ao companheiro se ele aceita a desistência
+        if companheiro.confirmarDesistencia(pontos_da_rodada): # Pergunta diretamente ao companheiro se ele aceita a desistência
             self.desistir(pontos_da_rodada)
             return True
         else:

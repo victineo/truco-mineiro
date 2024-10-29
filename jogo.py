@@ -46,27 +46,25 @@ class Jogo():
         pontos_da_rodada = 1
         rodadas_jogadas = 1
 
+        # Ordem inicial de jogadores, definida manualmente
         ordem_jogadores = [
             self.equipe_A.jogadores[0], self.equipe_B.jogadores[0],
             self.equipe_A.jogadores[1], self.equipe_B.jogadores[1]
         ]
 
-        while not self.verificarVencedorJogo(): # Enquanto não houver um vencedor
+        while not self.verificarVencedorJogo(): # Enquanto não houver um vencedor, novas rodadas acontecem
             #print(f'Vamos jogar Truco! Para começar, informe o nome de 4 jogadores:\n')
             print(f'\n----- INICIANDO {rodadas_jogadas}ª RODADA -----\n')
 
             # Criando uma nova rodada
             nova_rodada = Rodada(self.jogadores, self.equipes, self.baralho, 1)
 
-            if rodadas_jogadas == 1: # Se for a 1ª rodada do jogo, a mensagem é um pouco diferente
-                print(f'ORDEM INICIAL DE JOGADA: {[jogador.nome for jogador in ordem_jogadores]}')
-            else:
-                print(f'ORDEM DE JOGADA: {[jogador.nome for jogador in ordem_jogadores]}')
+            print(f'ORDEM DE JOGADA: {[jogador.nome for jogador in ordem_jogadores]}')
             
             nova_rodada.realizarPreRodada(rodadas_jogadas, self.pontuacao, ordem_jogadores) # Distribui as mãos e pede Famílias
             vencedor_rodada, pontos_da_rodada = nova_rodada.realizarRodada(rodadas_jogadas, ordem_jogadores) # Obtém o vencedor e os pontos da rodada
 
-            # Atualizando a pontuação da equipe vencedora
+            # Atualiza a pontuação da equipe vencedora
             if vencedor_rodada:
                 self.pontuacao[vencedor_rodada] += pontos_da_rodada
                 print(f'\nPONTUAÇÃO ATUAL: {self.pontuacao}')

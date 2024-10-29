@@ -41,15 +41,14 @@ class Rodada():
             if mao_descartada:
                 self.maos_descartadas.append((jogador, mao_descartada))
                 jogadores_pediram_familia = True
-                print(f'\n{jogador.nome} ({jogador.equipe.nome}) pediu Família.'.upper())
+                print(f'\n{jogador.nome} ({jogador.equipe.nome}) pediu Família.\nFamílias pedidas: {len(self.maos_descartadas)}/3'.upper())
         
         # Fase 2: Verificar famílias
         for jogador in ordem_jogadores:
             if self.maos_descartadas:
-                print(f'\n----- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Você pode abrir a(s) mão(s) descartadas pelos jogadores da equipe adversária. Se não forem famílias (constituídas por Q, J, K ou A), sua equipe ganha 1 ponto. Se for, a equipe adversária ganha um ponto. ---')
-                jogador_verificou_familia = jogador.verificarFamilias(self.maos_descartadas, self.equipes)
-                if jogador_verificou_familia:
-                    print(f'\nPontuação atual: {pontuacao_jogo}')
+                print(f'\n----- VERIFICAÇÃO DE FAMÍLIAS - {jogador.nome} ({jogador.equipe.nome}) -----\n--- Você pode abrir a(s) mão(s) descartadas pelos jogadores da equipe adversária. Se não forem famílias (constituídas por Q, J, K ou A), sua equipe ganha 1 ponto. Se forem, a equipe adversária ganha 1 ponto. ---')
+                jogador.verificarFamilias(self.maos_descartadas, self.equipes)
+                print(f'\nPontuação atual: {pontuacao_jogo}')
 
         print(f'\nA PRÉ-RODADA TERMINOU. A MD3 COMEÇARÁ AGORA.')
     
@@ -76,11 +75,11 @@ class Rodada():
             
             # Se houve desistência, encerra a rodada inteira
             if resultado_subrodada == 'desistencia':
-                equipe_desistiu = subrodada.jogadores[0].equipe.nome  # Usa qualquer jogador para descobrir quem desistiu
+                equipe_desistiu = subrodada.jogadores[0].equipe.nome # Usa qualquer jogador para descobrir quem desistiu
                 equipe_adversaria = 'Equipe A' if equipe_desistiu == 'Equipe B' else 'Equipe B'
 
                 print(f'\nA {equipe_adversaria} venceu a rodada por desistência da {equipe_desistiu}!')
-                return self.equipe_adversaria.nome, self.pontos_da_rodada  # A equipe adversária ganha os pontos
+                return self.equipe_adversaria.nome, self.pontos_da_rodada # A equipe adversária ganha os pontos
             
             # Verifica se houve um vencedor ou um empate na subrodada
             if resultado_subrodada is None:
@@ -101,7 +100,8 @@ class Rodada():
                 print(f'\nAmbas as equipes estão com 2 pontos de subrodada. A próxima subrodada será decisiva!')
                 continue # Pula o código abaixo e vai para a próxima iteração do loop
                 
-            if vitorias_equipes['Equipe A'] >= 2: # Verificando se uma das Equipes já venceu 2 subrodadas
+            # Verifica se uma das Equipes já venceu 2 subrodadas
+            if vitorias_equipes['Equipe A'] >= 2:
                 print(f'\nEquipe A venceu a rodada por {vitorias_equipes['Equipe A']} a {vitorias_equipes['Equipe B']}!')
                 return 'Equipe A', self.pontos_da_rodada # Retorna a equipe vencedora e os pontos da rodada
             elif vitorias_equipes['Equipe B'] >= 2:
