@@ -26,8 +26,7 @@ class Jogador():
             return 'descendo'
     
     def pedirAumento(self, proximo_jogador, tipo_aumento, pontos_da_rodada, carta_escolhida=None):
-        # Dicionário para determinar o próximo aumento e os pontos equivalentes
-        # 'tipo_aumento': ('proximo_aumento', pontos)
+        # 'tipo_aumento': ('prox_aumento', pontos)
         aumentos = {
             'Truco': ('Seis', 3),
             'Seis': ('Nove', 6),
@@ -38,53 +37,41 @@ class Jogador():
         prox_aumento, pontos = aumentos.get(tipo_aumento, (None, pontos_da_rodada))
         
         while True:
-            resposta_aumento = input(f'\nGostaria de pedir {tipo_aumento}?\n1. Sim\n2. Não, voltar\n3. O que é pedir {tipo_aumento}?\nInsira sua escolha: ')
-
-            if resposta_aumento == '1':
-                print(f'{self.nome} pediu {tipo_aumento}!')
-                resposta = proximo_jogador.responderAumento(self, tipo_aumento) # Resposta do próximo jogador ao aumento
+            print(f'Você pediu {tipo_aumento} para {proximo_jogador.nome} ({proximo_jogador.equipe.nome})!')
+            resposta = proximo_jogador.responderAumento(self, tipo_aumento) # Resposta do próximo jogador ao aumento
+            
+            if resposta is True: # Aceitou o aumento
+                print(f'{proximo_jogador.nome} ({proximo_jogador.equipe.nome}) aceitou o {tipo_aumento}! A rodada agora vale {pontos} pontos.')
+                carta_jogada = self.jogarCarta(carta_escolhida)
+                return carta_jogada, pontos # Retorna a carta jogada e pontos atualizados
+            elif resposta is False: # Recusou o aumento
+                print(f'{proximo_jogador.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_da_rodada} pontos.')
+                self.equipe.adicionarPonto(pontos_da_rodada)
+                return pontos_da_rodada
+            
+            while resposta == prox_aumento and prox_aumento: # Enquanto a resposta do próximo jogador for outro aumento
+                #print(f'{proximo_jogador.nome} pediu {prox_aumento} em resposta ao {tipo_aumento}.')
+                tipo_aumento = prox_aumento # Atualiza o tipo de aumento atual
+                prox_aumento, pontos = aumentos.get(tipo_aumento, (None, pontos)) # Atualiza o próximo aumento e os pontos
+                nova_resposta = self.responderAumento(proximo_jogador, tipo_aumento)
                 
-                if resposta is True: # Aceitou o aumento
-                    print(f'{proximo_jogador.nome} ({proximo_jogador.equipe.nome}) aceitou o {tipo_aumento}! A rodada agora vale {pontos} pontos.')
+                if nova_resposta is True: # Aceitou o próximo aumento
+                    print(f'{self.nome} aceitou o {tipo_aumento}! A rodada agora vale {pontos} pontos.')
                     carta_jogada = self.jogarCarta(carta_escolhida)
-                    return carta_jogada, pontos # Retorna a carta jogada e pontos atualizados
+                    return carta_jogada, pontos
                 
-                elif resposta == prox_aumento: # Próximo jogador pede aumento maior
-                    tipo_aumento = prox_aumento # Atualiza o tipo de aumento atual
-                    prox_aumento, pontos = aumentos.get(tipo_aumento, (None, pontos)) # Atualiza o próximo aumento e os pontos
-                    nova_resposta = self.responderAumento(proximo_jogador, tipo_aumento)
-                    
-                    if nova_resposta is True: # Aceitou o próximo aumento
-                        print(f'{self.nome} aceitou o {tipo_aumento}! A rodada agora vale {pontos} pontos.')
-                        carta_jogada = self.jogarCarta(carta_escolhida)
-                        return carta_jogada, pontos
-                    
-                    elif nova_resposta is False: # Recusou o aumento
-                        print(f'{self.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_da_rodada} pontos.')
-                        self.equipe.adicionarPonto(pontos_da_rodada)
-                        return pontos_da_rodada
-                
-                elif resposta is False: # Recusou o aumento
-                    print(f'{proximo_jogador.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_da_rodada} pontos.')
+                elif nova_resposta is False: # Recusou o aumento
+                    print(f'{self.nome} recusou o {tipo_aumento}. A rodada acabou, e vocês ganharam {pontos_da_rodada} pontos.')
                     self.equipe.adicionarPonto(pontos_da_rodada)
                     return pontos_da_rodada
-            
-            elif resposta_aumento == '2':
-                break
-            elif resposta_aumento == '3':
-                explicacoes = {
-                    'Truco': 'Pedir Truco é desafiar a equipe adversária a jogar a rodada atual valendo 3 pontos ao invés de 1.',
-                    'Seis': 'Pedir Seis é desafiar a equipe adversária a jogar a rodada atual valendo 6 pontos ao invés de 3.',
-                    'Nove': 'Pedir Nove é desafiar a equipe adversária a jogar a rodada atual valendo 9 pontos ao invés de 6.',
-                    'Doze': 'Pedir Doze é desafiar a equipe adversária a jogar a rodada atual valendo 12 pontos ao invés de 9.',
-                }
-                print(explicacoes.get(tipo_aumento, 'Ação inválida.'))
 
+                if prox_aumento is None: # Nenhum aumento foi pedido
+                    print(f'O aumento máximo, Doze, foi atingido. A rodada não pode mais aumentar de valor.')
+                    return None
+                    
+                                    
+                resposta = nova_resposta
 
-    '''
-    def replicarAumento(self, jogador_anterior, proximo_aumento):
-        resposta = input(f'{}')
-    '''
     def responderAumento(self, jogador_anterior, tipo_aumento):
         #proximo_aumento = None
         if tipo_aumento == 'Truco':
@@ -93,14 +80,31 @@ class Jogador():
             proximo_aumento = 'Nove'
         elif tipo_aumento == 'Nove':
             proximo_aumento = 'Doze'
-        
-        resposta = input(f'\n{self.nome}, {jogador_anterior.nome} ({jogador_anterior.equipe.nome}) está pedindo {tipo_aumento}!\n1. Aceitar\n2. Pedir {proximo_aumento}\n3. Recusar\n4. O que está acontecendo?\nInsira sua escolha: ')
-        if resposta == '1':
-            return True # Aceitou o aumento
-        elif resposta == '2':
-            return proximo_aumento
-        else:
-            return False # Recusou o aumento
+        elif tipo_aumento == 'Doze':
+            proximo_aumento = None
+
+        while True:
+            if tipo_aumento is not 'Doze':
+                resposta = input(f'\n{self.nome}, {jogador_anterior.nome} ({jogador_anterior.equipe.nome}) está pedindo {tipo_aumento}!\n1. Aceitar\n2. Pedir {proximo_aumento}\n3. Recusar\n4. O que está acontecendo?\nInsira sua escolha: ')
+                if resposta == '1':
+                    return True # Aceitou o aumento
+                elif resposta == '2':
+                    return proximo_aumento
+                elif resposta == '3':
+                    return False # Recusou o aumento
+                elif resposta == '4':
+                    print(f'\nAINDA NÃO IMPLEMENTADO.')
+                    continue
+            else:
+                resposta = input(f'\n{self.nome}, {jogador_anterior.nome} ({jogador_anterior.equipe.nome}) está pedindo {tipo_aumento}!\n1. Aceitar\n2. Recusar\n3. O que está acontecendo?\nInsira sua escolha: ')
+                if resposta == '1':
+                    return True # Aceitou o aumento
+                elif resposta == '2':
+                    return False # Recusou o aumento
+                elif resposta == '3':
+                    print(f'\nAINDA NÃO IMPLEMENTADO.')
+                    continue
+            
     
     def pedirFamilia(self, baralho):
         while True:
@@ -253,13 +257,28 @@ class Jogador():
                 return self.mostrarMao()
             elif escolha_acao == '3' and not pre_rodada:
                 if pontos_da_rodada == 1:
-                    return self.pedirAumento(self.proximo_jogador, 'Truco', pontos_da_rodada)
+                    tipo_aumento = 'Truco'
                 elif pontos_da_rodada == 3:
-                    return self.pedirAumento(self.proximo_jogador, 'Seis', pontos_da_rodada)
+                    tipo_aumento = 'Seis'
                 elif pontos_da_rodada == 6:
-                    return self.pedirAumento(self.proximo_jogador, 'Nove', pontos_da_rodada)
+                    tipo_aumento = 'Nove'
                 elif pontos_da_rodada == 9:
-                    return self.pedirAumento(self.proximo_jogador, 'Doze', pontos_da_rodada)
+                    tipo_aumento = 'Doze'
+                
+                confirmacao_aumento = input(f'\nGostaria de pedir {tipo_aumento}?\n1. Sim\n2. Não, voltar\n3. O que é pedir {tipo_aumento}?\nInsira sua escolha: ')
+                if confirmacao_aumento == '1':
+                    return self.pedirAumento(self.proximo_jogador, tipo_aumento, pontos_da_rodada)
+                elif confirmacao_aumento == '2':
+                    continue
+                elif confirmacao_aumento == '3':
+                    explicacoes = {
+                        'Truco': 'Pedir Truco é desafiar a equipe adversária a jogar a rodada atual valendo 3 pontos ao invés de 1.',
+                        'Seis': 'Pedir Seis é desafiar a equipe adversária a jogar a rodada atual valendo 6 pontos ao invés de 3.',
+                        'Nove': 'Pedir Nove é desafiar a equipe adversária a jogar a rodada atual valendo 9 pontos ao invés de 6.',
+                        'Doze': 'Pedir Doze é desafiar a equipe adversária a jogar a rodada atual valendo 12 pontos ao invés de 9.',
+                    }
+                    print(f'\n{explicacoes.get(tipo_aumento, 'Ação inválida.')}')
+                    continue
             elif escolha_acao == '4' and not pre_rodada:
                 if self.pedirDesistencia(pontos_da_rodada):
                     return 'desistencia'
